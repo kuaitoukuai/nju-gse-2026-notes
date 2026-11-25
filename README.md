@@ -7,6 +7,25 @@
 
 ---
 
+## 在线访问
+
+| 平台 | 仓库 | 阅读器 |
+|---|---|---|
+| GitHub | https://github.com/kuaitoukuai/nju-gse-2026-notes | https://kuaitoukuai.github.io/nju-gse-2026-notes/web/ |
+| Gitee | https://gitee.com/smallpencil/nju-gse-2026-notes | 需手动开 Pages（免费版不支持 API） |
+
+**下载大文件**（Word 与课件图，仓库本体不含）：
+
+| 包 | 大小 | 内容 |
+|---|---|---|
+| `gse2026-print.zip` | 48.5 MB | 7 份 A4 Word：速览 15 页 / 精读 80 页 / 标注 86 页 / 标注+PPT 285 页 / 逐字稿+PPT 325 页 / 细读上下 103+89 页 |
+| `gse2026-slides-images.zip` | 23.8 MB | PPT × 逐字稿 图文对照，426 张课件图 + 单页 HTML |
+
+- GitHub Releases：https://github.com/kuaitoukuai/nju-gse-2026-notes/releases/tag/v1.0
+- Gitee Releases：https://gitee.com/smallpencil/nju-gse-2026-notes/releases/tag/v1.0
+
+---
+
 ## 这是什么
 
 把这门课散落在**课程 wiki、B 站、GitHub、微信公众号**的材料收拢到一处，做成可以按不同方式读的版本：
