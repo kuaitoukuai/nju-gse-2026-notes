@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lab3 · 蒸馏你自己</title>
+<style>
+:root{--ink:#1e2328;--ink2:#545b63;--line:#e6e2d8;--accent:#0f766e;--code:#f2efe8}
+*{box-sizing:border-box}
+body{margin:0;background:#fbfaf7;color:var(--ink);
+font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+font-size:16px;line-height:1.95}
+.top{position:sticky;top:0;background:rgba(251,250,247,.92);backdrop-filter:blur(10px);
+border-bottom:1px solid var(--line);padding:12px 24px;font-size:13px;color:var(--ink2)}
+.top a{color:var(--accent);text-decoration:none}
+.wrap{max-width:780px;margin:0 auto;padding:40px 24px 100px}
+h1{font-size:1.9rem;line-height:1.35;margin:0 0 1em}
+h2{font-size:1.25rem;margin:2em 0 .6em;padding-left:12px;border-left:3px solid var(--accent)}
+h3{font-size:1.05rem;margin:1.6em 0 .5em}
+p{margin:0 0 1em;text-align:justify}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:.88em;
+font-family:ui-monospace,Consolas,monospace}
+pre{background:#1d232b;color:#e6edf3;padding:14px 16px;border-radius:9px;overflow:auto;font-size:13px;line-height:1.7}
+pre code{background:none;color:inherit;padding:0}
+blockquote{margin:1.2em 0;padding:10px 16px;border-left:3px solid #b45309;
+background:rgba(180,83,9,.05);color:var(--ink2);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:14px}
+th,td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+th{background:var(--code)}
+a{color:var(--accent)}
+img{max-width:100%;border-radius:8px}
+</style></head><body>
+<div class="top"><a href="index.html">← 课件目录</a>　|　Lab3 · 蒸馏你自己<span style="float:right">南京大学《生成式软件工程》2026 秋</span></div>
+<div class="wrap"><h1>实验 (3)：蒸馏你自己</h1>
+<p>本课程的实验是建议性质的实验，不记分。本实验和实验 (1) 内容有部分重叠，并且需要实验 (2) 的 Deep Research Agent 参与设计、使用和维护记忆。我们希望这个 Agent 能在同学们未来使用的过程中越变越好，甚至成为同学们科研和工作的一部分。</p>
+<h2>1. 背景</h2>
+<p>同学们在使用你自己实现的个人助手时，毫无疑问会发现，它经常会给你惊喜，但是又经常会给你惊吓。模型虽然博览群书，也经历了魔鬼一般严酷的后训练，这个 “超级做题家” 毕竟没有凡人肉身，不真正懂得人间疾苦，真正的共情还差点意思。所以也不意外，我们经常会需要反复纠正模型的口癖：</p>
+<p><img src="gpt-tease.webp" alt=""/></p>
+<center>(这个图片里甚至有 diffusion 失败的文字)</center>
+<p>更糟糕的是，每当同样的问题出现的时候，你都需要重新纠正 AI 的行为，即便在豆包输入法的帮助下，你依然感到头痛脑热，但又舍不得 Agent 给你的馈赠。有时候你精心调整了从互联网上下载的 Prompt，终于能让模型在一定程度上具备人感，但随着模型或者 Harness 的升级，又是一夜回到解放前。</p>
+<p>好消息是，聪明的同学们已经知道，未来 “评价人” 的方式很可能变成你的 Agent Trajectory，因此你已经偷偷收集了 Agent 的输出和你和他对骂的流程了——如果没有，也不用担心，你可以深度使用你的 Agent 一小段时间，你就凑齐了使 Agent 实现自进化 (更时髦的说法，Recursive Self-Improvement) 的 “反馈训练数据”。</p>
+<p><strong>是时候蒸馏你自己了。</strong></p>
+<h2>2. 实验要求</h2>
+<div class="box blue-box"><div><span class="float-left text-4xl mr-3 mt-2">🗒️</span><span class="font-serif text-lg border-b border-slate-600"><b>实验要求：实现系统化的提示词优化</b></span><div class="font-serif pt-2"><p>实现一个通用过程，使你的 Agent 支持自动评估-改进的闭环，你可以持续地增加代表好与坏的反馈数据集，并调优 Agent 与你的输出对齐的程度。</p></div></div></div>
+<p>(很不幸的，在这个实验中使用更强的基础模型能获得显著更好的效果。但无论使用什么模型，都能取得正向的效果。)</p>
+<h3>2.1 持续增长的评测集</h3>
+<p>反馈信号是支撑持续学习系统的关键。你需要在这个实验中，将自己的行为偏好以 benchmark 的方式记录下来，并且能让 Agent 反复运行、自我改进。行为偏好的来源可以来自：</p>
+<ul>
+<li>你针对某个任务亲自完成的文稿/答案。如果模型能根据任务描述输出你的反馈，即相当于模型与你完全对齐。但注意到同一个任务，在不同时间交给同一个人，由于当时所处环境等不同，人本身也会给出不同的答案，因此 “完全对齐” 是不可能的。但通常来说，一个人的思维方式在一段时间内是一致的，因此 “能否得到正确的观点” 就成为一个相对合理的评判标准。</li>
+<li>你针对某个任务的聊天记录，并且在后续聊天中持续纠正了模型的行为。此时可以将模型做出的错误决策，列为不良反馈，并且当模型再次做出同类错误决策时即成为扣分项。在构建这方面数据时，要小心注意有些纠正是带有额外 (没有和模型交代清楚) 的任务上下文的，这也是现在 Personal Agent 长期记忆面临的问题之一：他们可能会把某个有限定性的纠正过度夸张为通用规则，反而降低了使用体验。</li>
+</ul>
+<p>这个评测集定好易于维护的数据格式 (推荐使用文件系统中的文本/Markdown 文件) 后，你就可以持续地、在自己心情好的时候，不断扩展这个评测集；当然你也可能会看到之前某些评测数据的问题和缺憾，并且做出相应的修改。</p>
+<h3>2.2 蒸馏你自己</h3>
+<p>本质上我们认为基础模型已经具备了足够的思维能力，能够胜任困难的工作。只是它需要一个特别的方向引导——为了和你的经历和偏好对齐，这可能需要一个不短的提示词。我们希望你可以结合 Lab2 中的 Deep Research Agent (它能提供在知识库基础上更加深度思考的能力)，持续改进这个提示词，使你的 Agent 越来越与你对齐。</p>
+<p>你需要的是搜索一个<strong>提示词</strong>，能够使模型能生成与你的 “思维方式” 一致的输出。在上一节中的评测集提供了判断提示词好坏的基础。因此，一个基础的流程可以是：</p>
+<ul>
+<li>要求 Agent 在隔离的上下文 (即看不到你的输出) 的情况下，完成给定的任务。</li>
+<li>比对 Agent 的输出和你的输出的主要不同。</li>
+<li>修改提示词并重新运行，并对比结果是否改进，重复这个过程，直到对齐为止。</li>
+</ul>
+<p>这个循环能够取得一定正向的效果，但很容易进入一些常见的失败模式。首先，AI 很可能看到表象而看不到本质。例如，我在阅读本专业领域论文时，总是从已知知识的边界开始思考，并提炼具体的场景、问题和动机。这不是一个简单的提示词能 “做到的”，而是需要适当的提示词引导模型在长思维链中找到最合适的切入点。就算模型能正确 “感知” 到 AI 思维方式和人类思维方式之间的差距，AI 自己从中提炼的提示词改进方案也可能不起效果。甚至，提示词可能会污染上下文，让模型过度关注列出的部分，反而出现 overfitting 的现象——我们在使用通用 Agent 的 memory 时，会观察到我们 “骂过” AI 以后，AI 的过度反应，把某些词语、某些工作方式列为禁止，但这可能会伤害到一些确实要使用它们的上下文。这也是一个检验 Deep Research Agent 效果的好机会：通过互联网搜索、持续地多样性采样，模型就可能打破固有的思维，取得更好的效果。</p>
+<p>除此之外，要谨慎地设计对人类 “对齐” 的评价。我们当然可以直接让 Agent 去判定 “输出是否和人类一致” (甚至更极端一些，算一个 longest common subsequence)——但这显然不是好的反馈，因为让同一个人在两个不同时间做同一个任务，很可能会得到不同的结果。更合理的评判标准是 “是否在有允许一定宽松篇幅的情况下，覆盖了原先的主要观点”。我们也可以从多个维度，比如行文、断句、措辞、对读者知识的假设等……在有明确维度时，Agent 就会针对维度设计出分别改进的提示词。</p>
+<p>随着数据集和这个 RSI 过程的持续运行，“与你对齐” 也会越做越好。当然，我也很希望这个对齐的过程能成为基础模型能力的一部分，请大家期待。</p></div></div></body></html>
